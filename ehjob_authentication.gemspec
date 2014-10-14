@@ -7,11 +7,11 @@ require "ehjob_authentication/version"
 Gem::Specification.new do |s|
   s.name        = "ehjob_authentication"
   s.version     = EhjobAuthentication::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of EhjobAuthentication."
-  s.description = "TODO: Description of EhjobAuthentication."
+  s.authors     = ["Tien Nguyen", "Tien Le"]
+  s.email       = ["nqtien310@gmail.com", "tien@thinkei.com"]
+  s.homepage    = "http://www.employmenthero.com"
+  s.summary     = "EhjobAuthentication."
+  s.description = "Authentication for EH & JOB"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
