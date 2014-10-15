@@ -20,5 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "devise", "2.0.4"
   s.add_dependency "haml", "~> 4.0"
   s.add_dependency "simple_form", "~> 2.0"
+  s.add_dependency "httparty", "~> 0.13"
   s.add_development_dependency "debugger"
+  s.add_development_dependency "sqlite3"
 end
