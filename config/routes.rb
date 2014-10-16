@@ -1,6 +1,6 @@
 EhjobAuthentication::Engine.routes.draw do
   devise_for :users, skip: [:registrations, :passwords, :sessions]
-    as :user do
+  as :user do
     namespace :api do
       resources :users, only: [] do
         collection do
