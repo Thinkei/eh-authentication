@@ -1,6 +1,8 @@
 module EhjobAuthentication
   module Api
     class UsersController < ::EhjobAuthentication::ApplicationController
+      #before_filter :authenticate_through_api_client
+
       def authenticate
         user = User.where(email: params[:user][:email]).last
         if user && user.valid_password?(params[:user][:password])
@@ -32,6 +34,12 @@ module EhjobAuthentication
         { role: role, terminated: terminated }.to_json
       end
 
+      #def authenticate_through_api_client
+        #authenticate_or_request_with_http_token do |token, options|
+          ## FIXME Check API Key from request headers
+          #true
+        #end
+      #end
     end
   end
 end
