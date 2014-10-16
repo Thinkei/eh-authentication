@@ -18,7 +18,7 @@ describe SessionsController do
       context 'authentication api' do
         context 'found' do
           before do
-            expect(EhjobAuthentication::AuthenticateService).to receive(:call).and_return(user)
+            expect(EhjobAuthentication::AuthenticateService).to receive(:call).and_return(user.attributes.merge('url'=> 'http://www.employmenthero.com'))
           end
 
           it 'returns to service base_url' do
@@ -29,12 +29,12 @@ describe SessionsController do
 
         context 'not found' do
           before do
-            expect(EhjobAuthentication::AuthenticateService).to receive(:call).and_return(nil)
+            expect(EhjobAuthentication::AuthenticateService).to receive(:call).and_return({})
           end
 
-          it 'returns to default path' do
+          it 'returns to signin path' do
             post :create
-            expect(response).to redirect_to '/'
+            expect(response).to redirect_to '/users/sign_in'
           end
         end
       end

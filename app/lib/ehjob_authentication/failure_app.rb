@@ -10,7 +10,7 @@ module EhjobAuthentication
 
     def respond
       @user_json = AuthenticateService.call(params)
-      super
+      redirect
     end
   end
 end

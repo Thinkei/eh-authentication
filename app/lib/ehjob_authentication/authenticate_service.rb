@@ -5,7 +5,7 @@ module EhjobAuthentication
     class << self
       def call(params)
         validate(params)
-        service = HTTParty.post(authenticate_url, body: post_body(user_params), headers: post_headers)
+        service = HTTParty.post(authenticate_url, body: post_body(params), headers: post_headers)
         parse_response(service)
       rescue
         {}
@@ -15,9 +15,9 @@ module EhjobAuthentication
         EhjobAuthentication.config.authenticate_url
       end
 
-      def post_body(user_params)
+      def post_body(params)
         JSON.generate({
-          user: user_params
+          user: params['user']
         })
       end
 
