@@ -1,6 +1,6 @@
 module EhjobAuthentication
   module Api
-    class UsersController < Devise::SessionsController
+    class UsersController < ::EhjobAuthentication::ApplicationController
       def authenticate
         user = User.where(email: params[:user][:email]).last
         if user && user.valid_password?(params[:user][:password])
