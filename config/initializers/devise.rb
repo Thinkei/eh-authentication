@@ -3,4 +3,3 @@ Devise.setup do |config|
     warden.failure_app = EhjobAuthentication::FailureApp
   end
 end
-

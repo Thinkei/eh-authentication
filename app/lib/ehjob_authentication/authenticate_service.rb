@@ -1,6 +1,8 @@
 require 'httparty'
 
 module EhjobAuthentication
+  # TODO: Refactor to ApiClient
+  #
   class AuthenticateService
     class << self
       def call(params)
