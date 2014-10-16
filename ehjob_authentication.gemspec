@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency "omniauth"
   s.add_dependency "omniauth-facebook"
   s.add_dependency "omniauth-linkedin-oauth2"
-
+  s.add_dependency "httparty"
   s.add_development_dependency "debugger"
+  s.add_development_dependency "sqlite3"
 end

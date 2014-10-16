@@ -4,4 +4,3 @@ Devise.setup do |config|
   end
 end
 
-Devise.router_name = :ehjob_authentication

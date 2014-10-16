@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gemspec path: '../..'
+gem "jquery-rails"
+gem "debugger"
+gem "rspec-rails"
+gem "database_cleaner"
+gem "simple_form"
