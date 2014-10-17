@@ -1,5 +1,6 @@
 Devise.setup do |config|
-  config.warden do |warden|
-    warden.failure_app = EhjobAuthentication::FailureApp
+  config.warden do |manager|
+    manager.strategies.add(:ehjob_authentication, EhjobAuthentication::DeviseStrategy)
+    manager.default_strategies(:scope => :user).unshift :ehjob_authentication
   end
 end

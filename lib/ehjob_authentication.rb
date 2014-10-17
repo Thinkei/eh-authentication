@@ -1,11 +1,17 @@
 require "devise"
 require "ehjob_authentication/engine"
 require "ehjob_authentication/config"
+
+# JOB CONFIG
 # EhjobAuthentication.configure do |config|
-#   config.app = 'EH'
-#   config.base_url = 'http://www.employmenthero.com'
+#   config.eh_url = 'http://www.employmenthero.com'
 # end
-#
+
+# EH CONFIG
+# EhjobAuthentication.configure do |config|
+#   config.job_url = 'http://job.employmenthero.com'
+# end
+
 module EhjobAuthentication
   mattr_accessor :config
 

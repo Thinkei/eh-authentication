@@ -166,9 +166,11 @@ PLATFORMS
 DEPENDENCIES
   database_cleaner
   debugger
-  devise
+  devise (= 2.2.8)
   ehjob_authentication!
   figaro
+  httparty
+  rails (= 3.2.19)
   jquery-rails
   rails
   rspec-rails

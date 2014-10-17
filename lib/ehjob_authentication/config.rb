@@ -1,14 +1,17 @@
 module EhjobAuthentication
   class Config
-    attr_accessor :app, :base_url
-
-    def authenticate_url
-      raise "'base_url' isn't set yet" if base_url.nil?
-      "#{base_url}/api/users/authenticate"
-    end
+    attr_accessor :eh_url, :job_url
 
     def hr?
-      app == :hr
+      job_url.present?
+    end
+
+    def job?
+      eh_url.present?
+    end
+
+    def base_url
+      hr? ? job_url : eh_url
     end
   end
 end
