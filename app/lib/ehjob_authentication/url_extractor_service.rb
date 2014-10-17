@@ -20,23 +20,32 @@ module EhjobAuthentication
       def call(params, local_user)
         associate_user = ApiClient.instance.associate_user(params)
         roles = [local_user, associate_user].compact.map(&:highest_role)
+
+        #for now, only EH's users might be terminated
         is_terminated = [local_user, associate_user].compact.any?(&:terminated)
 
-        raise 'not found' if roles.empty?
+        redirect_url = if roles == []
+          raise 'not found'
 
-        if roles.include?('employee') || roles.include?('owner/employer')
+        elsif roles.include?('employee') || roles.include?('owner/employer')
           if is_terminated
-            #TODO create job seeker on job
-            job_url if hr?
+            job_url
           else
-            eh_url if job?
+            eh_url
           end
 
         elsif roles == ['job_seeker']
-          job_url if hr?
+          job_url
 
         elsif roles == ['hiring_manager']
           "#{job_url}/jobs" if hr?
+        end
+
+        if redirect_url
+          raise 'missing authentication token' if associate_user.auth_token.nil?
+          "#{redirect_url}?auth_token=#{associate_user.auth_token}"
+        else
+          nil
         end
       end
     end
