@@ -8,7 +8,7 @@ module EhjobAuthentication
           user = User.where(email: params[:email], auth_token: params[:user][:auth_token]).first
         else
           user = User.where(email: params[:user][:email]).last
-          user = user.valid_password?(params[:user][:password]) ? user : nil
+          user = (user && user.valid_password?(params[:user][:password])) ? user : nil
         end
 
         if user
