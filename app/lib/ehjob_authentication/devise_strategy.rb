@@ -8,21 +8,18 @@ module EhjobAuthentication
 
       if validate(resource){ encrypted = true; resource.valid_password?(password) }
         local_user = resource
+        local_user.password = password
       end
 
-      associated_user = AuthenticateService.call(resource.email, password)
-      roles = [local_user.role, associated_user['role']]
-
-      if roles.all?(&:nil?)
-        mapping.to.new.password = password if !encrypted && Devise.paranoid
-        fail(:not_found_in_database)
-
-      elsif redirectUrl = UrlExtractorService.call(roles)
-        redirect! redirectUrl
-
+      if redirect_url = UrlExtractorService.call(params, local_user)
+        redirect!(redirect_url)
       else
         success!(resource)
       end
+
+    rescue
+      mapping.to.new.password = password if !encrypted && Devise.paranoid
+      fail(:not_found_in_database)
     end
   end
 end
