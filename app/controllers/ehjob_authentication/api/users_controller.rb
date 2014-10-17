@@ -1,7 +1,7 @@
 module EhjobAuthentication
   module Api
     class UsersController < ::EhjobAuthentication::ApplicationController
-      #before_filter :authenticate_through_api_client
+      before_filter :authenticate_api_token
 
       def authenticate
         user = User.where(email: params[:user][:email]).last
@@ -34,12 +34,11 @@ module EhjobAuthentication
         { role: role, terminated: terminated }.to_json
       end
 
-      #def authenticate_through_api_client
-        #authenticate_or_request_with_http_token do |token, options|
-          ## FIXME Check API Key from request headers
-          #true
-        #end
-      #end
+      def authenticate_api_token
+        authenticate_or_request_with_http_token do |token, options|
+          token == Figaro.env.single_authentication_key
+        end
+      end
     end
   end
 end

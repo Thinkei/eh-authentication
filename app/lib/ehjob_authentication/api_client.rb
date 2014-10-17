@@ -11,10 +11,9 @@ module EhjobAuthentication
     default_options.merge!(verify: false)
     headers 'Content-Type' => 'application/json'
     headers 'Accept' => 'application/json'
-    debug_output $stderr
+    debug_output $stderr if Figaro.env.httparty_debug?
 
-    # FIXME
-    # headers 'API KEY' => 'secret'
+    headers 'Authorization' => "Token token='#{Figaro.env.single_authentication_key}'"
 
     delegate :base_url, to: 'EhjobAuthentication.config'
 
