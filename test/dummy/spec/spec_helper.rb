@@ -56,5 +56,4 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  config.render_views
 end

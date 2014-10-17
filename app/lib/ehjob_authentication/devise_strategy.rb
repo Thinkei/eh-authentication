@@ -14,12 +14,18 @@ module EhjobAuthentication
       if redirect_url = UrlExtractorService.call(params, local_user)
         redirect!(redirect_url)
       else
+        resource.after_database_authentication
         success!(resource)
       end
 
     rescue
-      mapping.to.new.password = password if !encrypted && Devise.paranoid
-      fail(:not_found_in_database)
+      if local_user.present?
+        resource.after_database_authentication
+        success!(resource)
+      else
+        mapping.to.new.password = password if !encrypted && Devise.paranoid
+        fail(:not_found_in_database)
+      end
     end
   end
 end
