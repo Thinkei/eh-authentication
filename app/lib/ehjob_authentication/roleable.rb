@@ -6,9 +6,12 @@
 #+ Job
 #++ hiring_manager
 #++ job_seeker
+require 'active_support/concern'
 
 module EhjobAuthentication
   module Roleable
+    extend ActiveSupport::Concern
+
     def highest_role
       if EhjobAuthentication.config.hr?
         role = (employer_or_owner? ? 'owner/employer' : 'employee')
@@ -22,6 +25,14 @@ module EhjobAuthentication
         memberships.any? && memberships.all? { |m| m.termination_date? }
       else
         nil
+      end
+    end
+
+    module ClassMethods
+      def find_user_from_oauth(auth)
+        return unless Object.const_defined?('Identity')
+
+        Indentity.where(uid: auth['uid'], provider: auth['provider']).first.try(:user)
       end
     end
   end

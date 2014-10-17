@@ -5,10 +5,7 @@ module EhjobAuthentication
 
       def associate_user
         if params[:uid].present?
-          if Object.const_defined? 'Identity'
-            identity = Identity.find_by_uid_and_provider params[:uid], params[:provider]
-            user = identity.try(:user)
-          end
+          user = User.find_user_from_oauth(params)
         else
           user = User.where(email: params[:user][:email]).last
           user = (user && user.valid_password?(params[:user][:password])) ? user : nil
@@ -20,6 +17,8 @@ module EhjobAuthentication
           render status: :not_found, nothing: true
         end
       end
+
+      private
 
       def authenticate_api_token
         authenticate_or_request_with_http_token do |token, options|
