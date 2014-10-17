@@ -1,8 +1,11 @@
 source 'https://rubygems.org'
 
 gemspec path: '../..'
+gem "rails"
 gem "jquery-rails"
 gem "debugger"
 gem "rspec-rails"
 gem "database_cleaner"
 gem "simple_form"
+gem 'devise'
+gem 'figaro'
