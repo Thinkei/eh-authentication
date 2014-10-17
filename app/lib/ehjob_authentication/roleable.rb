@@ -11,7 +11,7 @@ module EhjobAuthentication
   module Roleable
     def highest_role
       if EhjobAuthentication.config.hr?
-        role = (user.employer_or_owner? ? 'owner/employer' : 'employee')
+        role = (employer_or_owner? ? 'owner/employer' : 'employee')
       else
         'job_seeker'
       end
