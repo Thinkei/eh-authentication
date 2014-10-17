@@ -13,7 +13,7 @@ module EhjobAuthentication
     headers 'Accept' => 'application/json'
     debug_output $stderr if Figaro.env.httparty_debug?
 
-    headers 'Authorization' => "Token token='#{Figaro.env.single_authentication_key}'"
+    headers 'HTTP_AUTHORIZATION' => "Token token='#{Figaro.env.single_authentication_key}'"
 
     delegate :base_url, to: 'EhjobAuthentication.config'
 
