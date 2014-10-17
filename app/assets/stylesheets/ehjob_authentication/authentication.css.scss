@@ -1,0 +1,58 @@
+#session_form {
+  .sign-in-button {
+    width: 100%;
+  }
+
+  .disclaimer {
+    font-size: 12px;
+  }
+
+  .divider {
+    height: 1px;
+    margin: 15px 2px;
+    background-color: #888;
+    text-align: center;
+
+    span {
+      padding: 0 10px;
+      background-color: white;
+      position: relative;
+      top: -10px;
+      line-height: 20px;
+      vertical-align: middle;
+    }
+  }
+
+  .forgot-password {
+    margin-bottom: 10px;
+    text-align: right;
+  }
+
+  .omniauth-button {
+    position: relative;
+    width: 100%;
+    padding-left: 40px;
+    background: no-repeat 8px 8px;
+    &:before {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      width: 33px;
+      bottom: 3px;
+      border-right: 1px solid #CCC;
+      content: ' '
+    }
+
+    &.linkedin {
+      background-image: image-url('ehjob_authentication/linkedin-signin.png');
+    }
+
+    &.facebook {
+      background-image: image-url('ehjob_authentication/facebook-signin.png');
+    }
+
+    &.email {
+      background-image: image-url('ehjob_authentication/email-signin.png');
+    }
+  }
+}

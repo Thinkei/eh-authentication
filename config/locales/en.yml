@@ -1,0 +1,13 @@
+en:
+  devise:
+    sessions:
+      signed_in: 'Signed in successfully.'
+
+    omniauth_callbacks:
+      success: 'Signed in successfully with %{kind}.'
+      failure:
+        email: 'This email is already in use, please contact support for help'
+    providers:
+      facebook: 'Facebook'
+      linkedin: 'LinkedIn'
+
