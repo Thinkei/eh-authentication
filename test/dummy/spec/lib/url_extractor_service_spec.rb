@@ -7,8 +7,21 @@ describe EhjobAuthentication::UrlExtractorService do
     user.stub(:terminated?).and_return terminated
     user
   end
+
+  let(:associate_user) do
+    OpenStruct.new(
+      email: 'nqtien310@gmail.com',
+      password: 'password',
+      highest_role: assoc_highest_role,
+      auth_token: auth_token
+    )
+  end
+
+  let(:auth_token) { '450928543' }
+  let(:local_highest_role) { nil }
+  let(:assoc_highest_role) { nil }
+
   let(:terminated) { false }
-  let(:associate_user) { nil }
   let(:params) { {email: 't@gmail.com', password: 'password'}}
 
   before do
@@ -26,6 +39,7 @@ describe EhjobAuthentication::UrlExtractorService do
   describe '#call' do
     context 'user not found in both apps' do
       let(:local_user) { nil }
+      let(:associate_user) { nil }
 
       it 'should raise error' do
         expect {
@@ -36,6 +50,7 @@ describe EhjobAuthentication::UrlExtractorService do
 
     context 'EH' do
       let(:job_url) { 'http://job.employmenthero.com' }
+      let(:redirect_url) { "#{job_url}?auth_token=#{auth_token}"}
 
       context 'roles include employee' do
         let(:local_highest_role) { 'employee' }
@@ -44,7 +59,7 @@ describe EhjobAuthentication::UrlExtractorService do
           let(:terminated) { true }
 
           it 'returns job url' do
-            expect(subject.call(params, local_user)).to eq job_url
+            expect(subject.call(params, local_user)).to eq redirect_url
           end
         end
 
@@ -62,7 +77,7 @@ describe EhjobAuthentication::UrlExtractorService do
           let(:terminated) { true }
 
           it 'returns job url' do
-            expect(subject.call(params, local_user)).to eq job_url
+            expect(subject.call(params, local_user)).to eq redirect_url
           end
         end
 
@@ -74,27 +89,30 @@ describe EhjobAuthentication::UrlExtractorService do
       end
 
       context 'roles eq job_seeker' do
-        let(:local_highest_role) { 'job_seeker' }
+        let(:local_user) { nil }
+        let(:assoc_highest_role) { 'job_seeker' }
 
         it 'returns JOB url' do
-          expect(subject.call(params, local_user)).to eq job_url
+          expect(subject.call(params, local_user)).to eq redirect_url
         end
       end
 
       context 'roles eq hiring_manager' do
-        let(:local_highest_role) { 'hiring_manager' }
+        let(:local_user) { nil }
+        let(:assoc_highest_role) { 'hiring_manager' }
 
         it 'returns job_url/jobs' do
-          expect(subject.call(params, local_user)).to eq "#{job_url}/jobs"
+          expect(subject.call(params, local_user)).to eq "#{job_url}/jobs?auth_token=#{auth_token}"
         end
       end
     end
 
     context 'JOB' do
       let(:eh_url) { 'http://job.employmenthero.com' }
+      let(:redirect_url) { "#{eh_url}?auth_token=#{auth_token}"}
 
       context 'roles include employee' do
-        let(:local_highest_role) { 'employee' }
+        let(:assoc_highest_role) { 'employee' }
 
         context 'terminated' do
           let(:terminated) { true }
@@ -106,13 +124,13 @@ describe EhjobAuthentication::UrlExtractorService do
 
         context 'not terminated' do
           it 'returns EH url' do
-            expect(subject.call(params, local_user)).to eq eh_url
+            expect(subject.call(params, local_user)).to eq redirect_url
           end
         end
       end
 
       context 'roles include owner/employer' do
-        let(:local_highest_role) { 'owner/employer' }
+        let(:assoc_highest_role) { 'owner/employer' }
 
         context 'terminated' do
           let(:terminated) { true }
@@ -124,7 +142,7 @@ describe EhjobAuthentication::UrlExtractorService do
 
         context 'not terminated' do
           it 'returns EH url' do
-            expect(subject.call(params, local_user)).to eq eh_url
+            expect(subject.call(params, local_user)).to eq redirect_url
           end
         end
       end

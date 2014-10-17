@@ -29,27 +29,35 @@ module EhjobAuthentication
     def call
       raise 'not found' if roles.empty?
 
+      if url = authenticated_url
+        raise 'Missing authentication token' unless associate_user.authentication_token
+        query = { user_token: user.authentication_token, user_email: associate_user.email }.to_query
+        "#{url}?#{query}"
+      end
+    end
+
+    private
+
+    def authenticated_url
       if roles.include?('employee') || roles.include?('owner/employer')
         if user_terminated?
           if hr?
             job_url
           else
-            user = User.create(first_name: 'Test', last_name: 'Test', email: params[:user][:email])
+            @associate_user = User.create(first_name: 'Test', last_name: 'Test', email: params[:user][:email])
             job_url # with token from user
           end
         else
-          eh_url if job?
+          eh_url
         end
 
       elsif roles == ['job_seeker']
-        job_url if hr?
+        job_url
 
       elsif roles == ['hiring_manager']
-        "#{job_url}/jobs" if hr?
+        "#{job_url}/jobs"
       end
     end
-
-    private
 
     def roles
       [local_user, associate_user].compact.map(&:highest_role)
