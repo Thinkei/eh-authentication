@@ -4,8 +4,11 @@ module EhjobAuthentication
       before_filter :authenticate_api_token
 
       def associate_user
-        if params[:type] == 'omniauth'
-          user = User.where(email: params[:email], auth_token: params[:user][:auth_token]).first
+        if params[:uid].present?
+          if Object.const_defined? 'Identity'
+            identity = Identity.find_by_uid_and_provider params[:uid], params[:provider]
+            user = identity.try(:user)
+          end
         else
           user = User.where(email: params[:user][:email]).last
           user = (user && user.valid_password?(params[:user][:password])) ? user : nil
