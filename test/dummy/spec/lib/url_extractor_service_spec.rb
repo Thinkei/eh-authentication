@@ -39,6 +39,7 @@ describe EhjobAuthentication::UrlExtractorService do
   describe '#call' do
     context 'user not found in both apps' do
       let(:local_user) { nil }
+      let(:associate_user) { nil }
 
       it 'should raise error' do
         expect {
@@ -88,6 +89,7 @@ describe EhjobAuthentication::UrlExtractorService do
       end
 
       context 'roles eq job_seeker' do
+        let(:local_user) { nil }
         let(:assoc_highest_role) { 'job_seeker' }
 
         it 'returns JOB url' do
@@ -96,6 +98,7 @@ describe EhjobAuthentication::UrlExtractorService do
       end
 
       context 'roles eq hiring_manager' do
+        let(:local_user) { nil }
         let(:assoc_highest_role) { 'hiring_manager' }
 
         it 'returns job_url/jobs' do
