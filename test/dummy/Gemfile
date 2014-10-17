@@ -7,8 +7,7 @@ gem "debugger"
 gem "rspec-rails"
 gem "database_cleaner"
 gem "simple_form"
-gem "devise", '2.2.8'
+gem "devise"
 gem "httparty"
-gem "rails", '3.2.19'
 gem 'sqlite3'
 gem 'figaro'
