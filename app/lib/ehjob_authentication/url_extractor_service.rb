@@ -31,7 +31,7 @@ module EhjobAuthentication
 
       if url = authenticated_url
         raise 'Missing authentication token' unless associate_user.authentication_token
-        query = { user_token: user.authentication_token, user_email: associate_user.email }.to_query
+        query = { user_token: associate_user.authentication_token, user_email: params[:user][:email] }.to_query
         "#{url}?#{query}"
       end
     end
