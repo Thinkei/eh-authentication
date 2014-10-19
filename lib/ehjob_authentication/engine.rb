@@ -5,6 +5,7 @@ module EhjobAuthentication
     config.i18n.load_path += Dir[config.root.join('config', 'locales', '*.yml').to_s]
 
     config.after_initialize do
+      User.connection
       User.instance_eval do
         include EhjobAuthentication::Roleable
       end
