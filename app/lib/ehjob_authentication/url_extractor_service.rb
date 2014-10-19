@@ -41,11 +41,10 @@ module EhjobAuthentication
     def authenticated_url
       if roles.include?('employee') || roles.include?('owner/employer')
         if user_terminated?
-          if hr?
-            job_url
+          if job?
+            User.create first_name: 'Test', last_name: 'Test', email: params[:user][:email]
           else
-            @associate_user = User.create(first_name: 'Test', last_name: 'Test', email: params[:user][:email])
-            job_url # with token from user
+            job_url
           end
         else
           eh_url
