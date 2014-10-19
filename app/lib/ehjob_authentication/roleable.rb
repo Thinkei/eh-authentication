@@ -20,7 +20,7 @@ module EhjobAuthentication
       end
     end
 
-    def terminated?
+    def terminated
       if EhjobAuthentication.config.hr?
         memberships.any? && memberships.all? { |m| m.termination_date? }
       else

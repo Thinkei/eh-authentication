@@ -67,8 +67,8 @@ module EhjobAuthentication
       ApiClient.instance.associate_user(params.merge(auto_create_user: auto_create_associate_user))
     end
 
-    def auto_create_associate_user
-      hr? && local_user.terminated?
+    def auto_create_associate_user?
+      hr? && local_user.try(:terminated)
     end
 
     def user_terminated?

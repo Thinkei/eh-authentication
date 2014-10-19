@@ -27,7 +27,7 @@ describe EhjobAuthentication::Api::UsersController do
         end
 
         User.any_instance.stub(:highest_role).and_return 'employee'
-        User.any_instance.stub(:terminated?).and_return true
+        User.any_instance.stub(:terminated).and_return true
         request.env["HTTP_AUTHORIZATION"] = api_key
       end
 

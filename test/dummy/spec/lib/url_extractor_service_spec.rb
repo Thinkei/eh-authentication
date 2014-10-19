@@ -4,7 +4,7 @@ describe EhjobAuthentication::UrlExtractorService do
   let(:local_user) do
     user = User.create(email: 't@gmail.com', password: 'password')
     user.stub(:highest_role).and_return local_highest_role
-    user.stub(:terminated?).and_return terminated
+    user.stub(:terminated).and_return terminated
     user
   end
 
