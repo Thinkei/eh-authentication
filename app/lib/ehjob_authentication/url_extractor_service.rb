@@ -64,7 +64,7 @@ module EhjobAuthentication
     end
 
     def associate_user
-      ApiClient.instance.associate_user(params.merge(auto_create_user: auto_create_associate_user))
+      @associate_user ||= ApiClient.instance.associate_user(params.merge(auto_create_user: auto_create_associate_user?))
     end
 
     def auto_create_associate_user?
