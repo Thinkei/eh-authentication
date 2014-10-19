@@ -4,6 +4,7 @@ module EhjobAuthentication
       before_filter :authenticate_api_token
 
       def associate_user
+
         if params[:uid].present?
           user = User.find_user_from_oauth(params)
         else
@@ -13,11 +14,13 @@ module EhjobAuthentication
 
         if !user && params[:auto_create_user] # TODO: Convert to boolean?
           # TODO pass name parameters
-          user = User.create(first_name: 'Test', last_name: 'Test', email: params[:user][:email])
+          user = user.find_by_email(params[:user][:email])
+          user ||= User.create(first_name: 'Test', last_name: 'Test', email: params[:user][:email])
+          user.ensure_authentication_token
         end
 
         if user
-          render status: :ok, json: { highest_role: user.highest_role, terminated: user.terminated? }.to_json
+          render status: :ok, json: { authentication_token: user.authentication_token, highest_role: user.highest_role, terminated: user.terminated }.to_json
         else
           render status: :not_found, nothing: true
         end
