@@ -27,8 +27,15 @@
         </p>
       </div>
       <div class='form-actions'>
-        <%= f.button :submit, "Sign in", class: 'sign-in-button btn btn-primary btn-green', id: 'sign_in' %>
+        <%= f.button :submit, "Sign in", class: 'sign-in-button btn btn-primary btn-green', id: 'sign_in', data: { 'loading-text' => 'Signing in...' } %>
       </div>
     <% end %>
   </div>
 </div>
+
+<script>
+  $('.sign-in-button').click(function () {
+    var btn = $(this);
+    btn.button('loading');
+  });
+</script>
