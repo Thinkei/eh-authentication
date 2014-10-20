@@ -41,12 +41,15 @@ module EhjobAuthentication
     def authenticated_url
       if roles.include?('employee') || roles.include?('owner/employer')
         if user_terminated?
-          create_user if job?
-          job_url
+          if job?
+            create_user
+            '/'
+          else
+            job_url
+          end
         else
           eh_url
         end
-
       elsif roles == ['job_seeker']
         job_url
 
