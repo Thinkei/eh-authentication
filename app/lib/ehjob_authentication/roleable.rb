@@ -16,7 +16,7 @@ module EhjobAuthentication
       if EhjobAuthentication.config.hr?
         role = (employer_or_owner? ? 'owner/employer' : 'employee')
       else
-        'job_seeker'
+        email.to_s[/\+(.+)@/, 1] || 'job_seeker'
       end
     end
 
