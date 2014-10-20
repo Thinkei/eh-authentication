@@ -84,7 +84,11 @@ module EhjobAuthentication
     end
 
     def create_user
-      @local_associate_user = EhjobAuthentication::CreateAssociationUserService.call(associate_user.to_h.slice(:email, :first_name, :last_name))
+      @local_associate_user = EhjobAuthentication::CreateAssociationUserService.call(
+        email: associate_user.email,
+        first_name: associate_user.first_name,
+        last_name: associate_user.last_name
+      )
     end
   end
 end
