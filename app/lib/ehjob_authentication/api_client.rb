@@ -11,7 +11,7 @@ module EhjobAuthentication
     default_options.merge!(verify: false)
     headers 'Content-Type' => 'application/json'
     headers 'Accept' => 'application/json'
-    debug_output $stderr if Figaro.env.httparty_debug?
+    debug_output $stderr if ENV['HTTPARTY_DEBUG'].present?
 
     headers 'AUTHORIZATION' => "Token token=#{Figaro.env.single_authentication_key}"
 
