@@ -3,9 +3,9 @@ module EhjobAuthentication
     def provider_callback
       auth_data  = request.env["omniauth.auth"]
       local_user = User.find_user_from_oauth(auth_data)
-      url = UrlExtractorService.call(auth_data, local_user)
+      url = UrlExtractorService.call(auth_data, local_user) rescue nil
 
-      redirect_to(url || new_user_session_path)
+      redirect_to(url || main_app.new_user_session_path)
     end
 
     alias :facebook :provider_callback
