@@ -1,10 +1,16 @@
 require 'spec_helper'
 
+def post_assoc_user(params = {})
+  default_params = {user: { email: email, password: password }, use_route: :ehjob_authentication}
+  params = default_params.merge(params)
+  post :associate_user, params
+end
+
 describe EhjobAuthentication::Api::UsersController do
   describe 'POST #authenticate' do
-    let(:email) { 't@gmail.com' }
+    let!(:user) { User.create(email: 't@gmail.com', password: 'password') }
+    let(:email) {  user.email }
     let(:password) { 'password' }
-    let!(:user) { User.create(email: email, password: password) }
     let(:api_key) { "Token token=#{Figaro.env.single_authentication_key}" }
 
     before do
@@ -14,8 +20,7 @@ describe EhjobAuthentication::Api::UsersController do
     context 'Invalid API key' do
       it 'returns Unauthorized response' do
         request.env["HTTP_AUTHORIZATION"] = 'foo'
-        post :associate_user, user: { email: email, password: password }, use_route: :ehjob_authentication
-
+        post_assoc_user
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -34,12 +39,12 @@ describe EhjobAuthentication::Api::UsersController do
       context 'form type' do
         context 'found' do
           it 'returns status success' do
-            post :associate_user, user: {email: email, password: password}, :use_route => :ehjob_authentication
+            post_assoc_user
             expect(response).to be_success
           end
 
           it 'returns user json, includes highest_role & terminated' do
-            post :associate_user, user: {email: email, password: password}, :use_route => :ehjob_authentication
+            post_assoc_user
             json = JSON.parse(response.body)
 
             expect(json['highest_role']).to eq 'employee'
@@ -48,9 +53,52 @@ describe EhjobAuthentication::Api::UsersController do
         end
 
         context 'not found' do
-          it 'returns not found' do
-            post :associate_user, user: {email: 'invalid@gmail.com', password: password}, :use_route => :ehjob_authentication
-            expect(response.status).to eq 404 #not found
+          context 'auto create user' do
+            let(:additional_params) do
+              { auto_create_user: true, user: {email: email, first_name: 'first', last_name: 'last'} }
+            end
+
+            context 'email does not exist' do
+              let(:email) { 'new_email@gmail.com' }
+
+              it 'creates associate user with given email/first, last name' do
+                expect {
+                  post_assoc_user(additional_params)
+                }.to change(User, :count)
+
+                new_user = User.last
+                expect(new_user.first_name).to eq 'first'
+                expect(new_user.last_name).to eq 'last'
+              end
+
+              it 'returns user json' do
+                post_assoc_user(additional_params)
+                json = JSON.parse(response.body)
+                expect(json['email']).to eq email
+                expect(json['authentication_token']).not_to be_nil
+                expect(json['highest_role']).not_to be_nil
+                expect(json['terminated']).not_to be_nil
+                expect(json['first_name']).to eq 'first'
+                expect(json['last_name']).to eq 'last'
+              end
+            end
+
+            context 'email exists' do
+              it 'does not create associate user' do
+                expect {
+                  post_assoc_user(additional_params)
+                }.not_to change(User, :count)
+              end
+            end
+          end
+
+          context 'does not auto create user' do
+            let(:email) { 'invalid@gmail.com' }
+
+            it 'returns not found' do
+              post_assoc_user
+              expect(response.status).to eq 404 #not found
+            end
           end
         end
       end

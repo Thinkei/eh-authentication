@@ -5,27 +5,33 @@ describe EhjobAuthentication::UrlExtractorService do
     user = User.create(email: 't@gmail.com', password: 'password')
     user.stub(:highest_role).and_return local_highest_role
     user.stub(:terminated).and_return terminated
+    user.ensure_authentication_token!
     user
   end
 
   let(:associate_user) do
     OpenStruct.new(
-      email: 'nqtien310@gmail.com',
+      email: 't@gmail.com',
       password: 'password',
       highest_role: assoc_highest_role,
-      auth_token: auth_token
+      authentication_token: authentication_token,
+      first_name: 'first',
+      last_name: 'last',
+      terminated: terminated
     )
   end
 
-  let(:auth_token) { '450928543' }
+  let(:authentication_token) { '450928543' }
   let(:local_highest_role) { nil }
   let(:assoc_highest_role) { nil }
 
   let(:terminated) { false }
-  let(:params) { {email: 't@gmail.com', password: 'password'}}
+  let(:params) do
+    {user: { email: 't@gmail.com', password: 'password'}}
+  end
 
   before do
-    expect(EhjobAuthentication::ApiClient.instance).to receive(:associate_user).with(params).and_return associate_user
+    expect(EhjobAuthentication::ApiClient.instance).to receive(:associate_user).and_return associate_user
 
     EhjobAuthentication.configure do |config|
       config.eh_url = eh_url
@@ -50,7 +56,10 @@ describe EhjobAuthentication::UrlExtractorService do
 
     context 'EH' do
       let(:job_url) { 'http://job.employmenthero.com' }
-      let(:redirect_url) { "#{job_url}?auth_token=#{auth_token}"}
+      let(:redirect_url) do
+        query = { user_token: authentication_token, user_email: associate_user.email }.to_query
+        "#{job_url}?#{query}"
+      end
 
       context 'roles include employee' do
         let(:local_highest_role) { 'employee' }
@@ -98,51 +107,69 @@ describe EhjobAuthentication::UrlExtractorService do
       end
 
       context 'roles eq hiring_manager' do
+        let(:redirect_url) do
+          query = { user_token: authentication_token, user_email: associate_user.email }.to_query
+          "#{job_url}/jobs?#{query}"
+        end
+
         let(:local_user) { nil }
         let(:assoc_highest_role) { 'hiring_manager' }
 
         it 'returns job_url/jobs' do
-          expect(subject.call(params, local_user)).to eq "#{job_url}/jobs?auth_token=#{auth_token}"
+          expect(subject.call(params, local_user)).to eq redirect_url
         end
       end
     end
 
     context 'JOB' do
       let(:eh_url) { 'http://job.employmenthero.com' }
-      let(:redirect_url) { "#{eh_url}?auth_token=#{auth_token}"}
-
-      context 'roles include employee' do
-        let(:assoc_highest_role) { 'employee' }
-
-        context 'terminated' do
-          let(:terminated) { true }
-
-          it 'returns nil' do
-            expect(subject.call(params, local_user)).to be_nil
-          end
-        end
-
-        context 'not terminated' do
-          it 'returns EH url' do
-            expect(subject.call(params, local_user)).to eq redirect_url
-          end
-        end
+      let(:redirect_url) do
+        query = { user_token: authentication_token, user_email: associate_user.email }.to_query
+        "#{eh_url}?#{query}"
       end
 
-      context 'roles include owner/employer' do
-        let(:assoc_highest_role) { 'owner/employer' }
+      ['employee', 'owner/employer'].each do |role|
+        context "roles include #{role}" do
+          let(:assoc_highest_role) { role }
 
-        context 'terminated' do
-          let(:terminated) { true }
+          context 'terminated' do
+            let(:redirect_url) do
+              query = { user_token: local_user.authentication_token, user_email: associate_user.email }.to_query
+              "/?#{query}"
+            end
 
-          it 'returns nil' do
-            expect(subject.call(params, local_user)).to be_nil
+            let(:terminated) { true }
+
+            context 'local user not found' do
+              let(:local_user) { nil }
+
+              it 'creates local assoc user' do
+                expect{
+                  subject.call(params, local_user)
+                }.to change(User, :count)
+              end
+            end
+
+            context 'local user is found' do
+              it 'does not create local assoc user' do
+                local_user
+
+                expect {
+                  subject.call(params, local_user)
+                }.not_to change(User, :count)
+              end
+            end
+
+            it 'returns local url with local assoc user auth_token' do
+              local_user
+              expect(subject.call(params, local_user)).to eq redirect_url
+            end
           end
-        end
 
-        context 'not terminated' do
-          it 'returns EH url' do
-            expect(subject.call(params, local_user)).to eq redirect_url
+          context 'not terminated' do
+            it 'returns EH url' do
+              expect(subject.call(params, local_user)).to eq redirect_url
+            end
           end
         end
       end
