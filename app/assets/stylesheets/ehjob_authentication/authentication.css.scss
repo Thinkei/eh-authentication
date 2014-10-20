@@ -3,6 +3,11 @@
     width: 100%;
   }
 
+  .form-group {
+    padding: 7px 0;
+    border: 0;
+  }
+
   .disclaimer {
     font-size: 12px;
   }
@@ -25,7 +30,6 @@
 
   .forgot-password {
     margin-bottom: 10px;
-    text-align: right;
   }
 
   .omniauth-button {
@@ -54,5 +58,13 @@
     &.email {
       background-image: image-url('ehjob_authentication/email-signin.png');
     }
+  }
+}
+
+.signin #session_form {
+  margin-top: 40px;
+
+  .divider span {
+    background: #fafafa image-url('texture-light.png') repeat 0 0;
   }
 }
