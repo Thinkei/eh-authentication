@@ -30,9 +30,9 @@ module EhjobAuthentication
 
     module ClassMethods
       def find_user_from_oauth(auth)
-        return unless Object.const_defined?('Identity')
-
-        Indentity.where(uid: auth['uid'], provider: auth['provider']).first.try(:user)
+        Identity.where(uid: auth['uid'], provider: auth['provider']).first.try(:user)
+      rescue
+        nil
       end
     end
   end
