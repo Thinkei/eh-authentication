@@ -4,7 +4,6 @@ module EhjobAuthentication
       before_filter :authenticate_api_token
 
       def associate_user
-
         if params[:uid].present?
           user = User.find_user_from_oauth(params)
         else
@@ -12,15 +11,10 @@ module EhjobAuthentication
           user = (user && user.valid_password?(params[:user][:password])) ? user : nil
         end
 
-        if !user && params[:auto_create_user] # TODO: Convert to boolean?
-          # TODO pass name parameters
-          user = user.find_by_email(params[:user][:email])
-          user ||= User.create(first_name: 'Test', last_name: 'Test', email: params[:user][:email])
-          user.ensure_authentication_token
-        end
+        user ||= create_user if params[:auto_create_user] # TODO: Convert to boolean?
 
         if user
-          render status: :ok, json: { authentication_token: user.authentication_token, highest_role: user.highest_role, terminated: user.terminated }.to_json
+          render status: :ok, json: user_json(user)
         else
           render status: :not_found, nothing: true
         end
@@ -32,6 +26,24 @@ module EhjobAuthentication
         authenticate_or_request_with_http_token do |token, options|
           token == Figaro.env.single_authentication_key
         end
+      end
+
+      def create_user
+          User.where(email: params[:user][:email]).first_or_create do |user|
+            # TODO pass correct name, password parameters
+            user.first_name = 'Test'
+            user.last_name = 'Test'
+            user.password = 'Password'
+          end
+      end
+
+      def user_json(user)
+        {
+          email: user.email,
+          authentication_token: user.authentication_token,
+          highest_role: user.highest_role,
+          terminated: user.terminated
+        }.to_json
       end
     end
   end
