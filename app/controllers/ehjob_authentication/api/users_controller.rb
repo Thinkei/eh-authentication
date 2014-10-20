@@ -37,6 +37,7 @@ module EhjobAuthentication
           email: user.email,
           authentication_token: user.authentication_token,
           highest_role: user.highest_role,
+          encrypted_password: user.encrypted_password,
           terminated: user.terminated
         }
 

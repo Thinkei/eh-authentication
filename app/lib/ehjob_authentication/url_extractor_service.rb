@@ -71,7 +71,9 @@ module EhjobAuthentication
 
     def associate_params
       associate_params = params.deep_dup
-      associate_params[:user].merge!(first_name: local_user.try(:first_name), last_name: local_user.try(:last_name))
+      if local_user
+        associate_params[:user].merge!(local_user.attributes.slice(:first_name, :last_name))
+      end
       associate_params.merge!(auto_create_user: auto_create_associate_user?)
     end
 
@@ -87,7 +89,8 @@ module EhjobAuthentication
       @local_associate_user = EhjobAuthentication::CreateAssociationUserService.call(
         email: associate_user.email,
         first_name: associate_user.first_name,
-        last_name: associate_user.last_name
+        last_name: associate_user.last_name,
+        encrypted_password: associate_user.encrypted_password
       )
     end
   end
