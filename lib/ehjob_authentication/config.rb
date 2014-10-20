@@ -1,6 +1,6 @@
 module EhjobAuthentication
   class Config
-    attr_accessor :eh_url, :job_url
+    attr_accessor :eh_url, :job_url, :disable
 
     def hr?
       job_url.present?

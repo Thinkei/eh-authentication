@@ -66,7 +66,9 @@ module EhjobAuthentication
     end
 
     def associate_user
-      @associate_user ||= (ApiClient.instance.associate_user(associate_params) rescue nil)
+      unless EhjobAuthentication.config.disable
+        @associate_user ||= (ApiClient.instance.associate_user(associate_params) rescue nil)
+      end
     end
 
     def associate_params
