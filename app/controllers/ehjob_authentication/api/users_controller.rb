@@ -29,21 +29,24 @@ module EhjobAuthentication
       end
 
       def create_user
-          User.where(email: params[:user][:email]).first_or_create do |user|
-            # TODO pass correct name, password parameters
-            user.first_name = 'Test'
-            user.last_name = 'Test'
-            user.password = Devise.friendly_token.first(8)
-          end
+        EhjobAuthentication::CreateAssociationUserService.call(params[:user])
       end
 
       def user_json(user)
-        {
+        json = {
           email: user.email,
           authentication_token: user.authentication_token,
           highest_role: user.highest_role,
           terminated: user.terminated
-        }.to_json
+        }
+
+        if EhjobAuthentication.config.job?
+          json.merge! user.attributes.slice 'first_name', 'last_name'
+        else
+          json.merge! user.memberships.first.try(:attributes).try(:slice, 'first_name', 'last_name')
+        end
+
+        json.to_json
       end
     end
   end

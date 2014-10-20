@@ -12,6 +12,7 @@
 #   raise => 'login fail'
 # }
 
+
 module EhjobAuthentication
   class UrlExtractorService
     attr_accessor :params, :local_user
@@ -28,7 +29,6 @@ module EhjobAuthentication
 
     def call
       raise 'not found' if roles.empty?
-
       if url = authenticated_url
         raise 'Missing authentication token' unless associate_user.authentication_token
         query = { user_token: associate_user.authentication_token, user_email: associate_user.email }.to_query
@@ -41,12 +41,8 @@ module EhjobAuthentication
     def authenticated_url
       if roles.include?('employee') || roles.include?('owner/employer')
         if user_terminated?
-          if job?
-            create_user
-            job_url
-          else
-            job_url
-          end
+          create_user if job?
+          job_url
         else
           eh_url
         end
@@ -64,8 +60,13 @@ module EhjobAuthentication
     end
 
     def associate_user
-      params.merge!(auto_create_user: auto_create_associate_user?)
-      @associate_user ||= (ApiClient.instance.associate_user(params) rescue nil)
+      @associate_user ||= (ApiClient.instance.associate_user(associate_params) rescue nil)
+    end
+
+    def associate_params
+      associate_params = params.deep_dup
+      associate_params[:user].merge!(first_name: local_user.try(:first_name), last_name: local_user.try(:last_name))
+      associate_params.merge!(auto_create_user: auto_create_associate_user?)
     end
 
     def auto_create_associate_user?
@@ -77,11 +78,7 @@ module EhjobAuthentication
     end
 
     def create_user
-        User.where(email: params[:user][:email]).first_or_create do |user|
-          user.first_name = associate_user.first_name
-          user.last_name = associate_user.last_name
-          user.password = Devise.friendly_token.first(8)
-        end
+      EhjobAuthentication::CreateAssociationUserService.call(associate_user.to_h.slice(:email, :first_name, :last_name))
     end
   end
 end
