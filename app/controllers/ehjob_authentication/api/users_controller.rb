@@ -11,7 +11,7 @@ module EhjobAuthentication
           user = (user && user.valid_password?(params[:user][:password])) ? user : nil
         end
 
-        user ||= create_user if params[:auto_create_user] # TODO: Convert to boolean?
+        user ||= create_user if params[:auto_create_user]
 
         if user
           render status: :ok, json: user_json(user)
@@ -33,7 +33,7 @@ module EhjobAuthentication
             # TODO pass correct name, password parameters
             user.first_name = 'Test'
             user.last_name = 'Test'
-            user.password = 'Password'
+            user.password = Devise.friendly_token.first(8)
           end
       end
 
