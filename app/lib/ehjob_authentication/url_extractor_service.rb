@@ -42,7 +42,8 @@ module EhjobAuthentication
       if roles.include?('employee') || roles.include?('owner/employer')
         if user_terminated?
           if job?
-            User.create first_name: 'Test', last_name: 'Test', email: params[:user][:email]
+            create_user
+            job_url
           else
             job_url
           end
@@ -73,6 +74,14 @@ module EhjobAuthentication
 
     def user_terminated?
       [local_user, associate_user].compact.any?(&:terminated)
+    end
+
+    def create_user
+        User.where(email: params[:user][:email]).first_or_create do |user|
+          user.first_name = associate_user.first_name
+          user.last_name = associate_user.last_name
+          user.password = Devise.friendly_token.first(8)
+        end
     end
   end
 end
