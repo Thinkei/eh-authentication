@@ -6,8 +6,7 @@ module EhjobAuthentication
         user.last_name =  params[:last_name] || 'last_name'
         user.password = Devise.friendly_token.first(8)
       end
-
-      user.ensure_authentication_token
+      user.ensure_authentication_token!
       user
     end
   end
