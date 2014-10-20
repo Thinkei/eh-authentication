@@ -15,7 +15,9 @@ module EhjobAuthentication
           user.update_attribute :encrypted_password, params[:encrypted_password]
         end
       end
-      user.ensure_authentication_token!
+
+      user.ensure_authentication_token
+      user.save # need to call save or else it's not gonna be saved in database
       user
     end
   end
