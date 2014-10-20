@@ -30,8 +30,11 @@ module EhjobAuthentication
     def call
       raise 'not found' if roles.empty?
       if url = authenticated_url
-        raise 'Missing authentication token' unless associate_user.authentication_token
-        query = { user_token: associate_user.authentication_token, user_email: associate_user.email }.to_query
+        #If redirect to local , use auth token of local assoc user
+        authentication_token = url == '/' ? @local_associate_user.authentication_token : associate_user.authentication_token
+
+        raise 'Missing authentication token' unless authentication_token
+        query = { user_token: authentication_token, user_email: associate_user.email }.to_query
         "#{url}?#{query}"
       end
     end
@@ -81,7 +84,7 @@ module EhjobAuthentication
     end
 
     def create_user
-      EhjobAuthentication::CreateAssociationUserService.call(associate_user.to_h.slice(:email, :first_name, :last_name))
+      @local_associate_user = EhjobAuthentication::CreateAssociationUserService.call(associate_user.to_h.slice(:email, :first_name, :last_name))
     end
   end
 end
