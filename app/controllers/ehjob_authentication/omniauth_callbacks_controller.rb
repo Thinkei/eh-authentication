@@ -13,8 +13,16 @@ module EhjobAuthentication
     def provider_callback_for_signin
       auth_data  = request.env["omniauth.auth"]
       local_user = User.find_user_from_oauth(auth_data)
-      url = UrlExtractorService.call(auth_data, local_user) rescue nil
-      redirect_to(url || main_app.new_user_session_path)
+
+      if url = UrlExtractorService.call(auth_data, local_user)
+        redirect_to url
+      else
+        sign_in(:user, local_user)
+        respond_with local_user, location: after_sign_in_path_for(local_user)
+      end
+
+    rescue
+      redirect_to main_app.new_user_session_path
     end
 
     def provider_callback_for_signup
