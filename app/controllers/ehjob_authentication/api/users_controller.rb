@@ -44,7 +44,7 @@ module EhjobAuthentication
         if EhjobAuthentication.config.job?
           json.merge! user.attributes.slice 'first_name', 'last_name'
         else
-          json.merge! user.memberships.first.try(:attributes).try(:slice, 'first_name', 'last_name')
+          json.merge!(user.memberships.first.try(:attributes).try(:slice, 'first_name', 'last_name') || {})
         end
 
         json.to_json
