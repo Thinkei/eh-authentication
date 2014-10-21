@@ -24,10 +24,11 @@ describe EhjobAuthentication::UrlExtractorService do
   let(:authentication_token) { '450928543' }
   let(:local_highest_role) { nil }
   let(:assoc_highest_role) { nil }
-
+  let(:eh_url) { nil }
+  let(:job_url) { nil }
   let(:terminated) { false }
   let(:params) do
-    {user: { email: 't@gmail.com', password: 'password'}}
+    { user: { email: 't@gmail.com', password: 'password'} }
   end
 
   before do
@@ -38,9 +39,6 @@ describe EhjobAuthentication::UrlExtractorService do
       config.job_url = job_url
     end
   end
-
-  let(:eh_url) { nil }
-  let(:job_url) { nil }
 
   describe '#call' do
     context 'user not found in both apps' do
@@ -59,6 +57,11 @@ describe EhjobAuthentication::UrlExtractorService do
       let(:redirect_url) do
         query = { user_token: authentication_token, user_email: associate_user.email }.to_query
         "#{job_url}?#{query}"
+      end
+      let(:membership) { double(attributes: { 'first_name' => 'Mickey', 'last_name' => 'Mouse' }) }
+
+      before do
+        allow(local_user).to receive(:memberships).and_return([membership])
       end
 
       context 'roles include employee' do
@@ -133,12 +136,11 @@ describe EhjobAuthentication::UrlExtractorService do
           let(:assoc_highest_role) { role }
 
           context 'terminated' do
+            let(:terminated) { true }
             let(:redirect_url) do
               query = { user_token: local_user.authentication_token, user_email: associate_user.email }.to_query
               "/?#{query}"
             end
-
-            let(:terminated) { true }
 
             context 'local user not found' do
               let(:local_user) { nil }
