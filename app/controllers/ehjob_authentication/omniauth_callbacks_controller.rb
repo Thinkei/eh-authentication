@@ -1,7 +1,7 @@
 module EhjobAuthentication
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     def provider_callback
-      if request.env['omniauth.origin'].include? 'sign_up'
+      if request.env['omniauth.origin'].to_s.include? 'sign_up'
         provider_callback_for_signup
       else
         provider_callback_for_signin
@@ -17,8 +17,9 @@ module EhjobAuthentication
       if url = UrlExtractorService.call(auth_data, local_user)
         redirect_to url
       else
-        sign_in(:user, local_user)
-        respond_with local_user, location: after_sign_in_path_for(local_user)
+        provider_name = request.env["omniauth.auth"].provider
+        flash[:notice] = t('devise.omniauth_callbacks.success', :kind => t(provider_name, scope: 'devise.providers'))
+        sign_in_and_redirect local_user, event: :authentication
       end
 
     rescue
@@ -26,14 +27,7 @@ module EhjobAuthentication
     end
 
     def provider_callback_for_signup
-      provider_name = request.env["omniauth.auth"].provider
-      user = ExternalUserRegistration.call(request.env["omniauth.auth"])
-      if user.persisted? || user.save
-        sign_in_and_redirect user, :event => :authentication #this will throw if @user is not activated
-        flash[:notice] = t('devise.omniauth_callbacks.success', :kind => t(provider_name, scope: 'devise.providers'))
-      else
-        redirect_to root_path, alert: t('devise.omniauth_callbacks.failure.email')
-      end
+      raise NotImplementedError
     end
 
     alias :facebook :provider_callback
