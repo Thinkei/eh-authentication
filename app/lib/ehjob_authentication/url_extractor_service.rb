@@ -16,7 +16,7 @@
 module EhjobAuthentication
   class UrlExtractorService
     attr_accessor :params, :local_user
-    delegate :hr?, :job?, :eh_url, :job_url, to: 'EhjobAuthentication.config'
+    delegate :hr?, :job?, to: 'EhjobAuthentication.config'
 
     def self.call(params, local_user)
       new(params, local_user).call
@@ -35,6 +35,7 @@ module EhjobAuthentication
 
         raise 'Missing authentication token' unless authentication_token
         query = { user_token: authentication_token, user_email: associate_user.email }.to_query
+
         "#{url}?#{query}"
       end
     end
@@ -57,7 +58,7 @@ module EhjobAuthentication
         job_url
 
       elsif roles == ['hiring_manager']
-        "#{job_url}/jobs"
+        File.join job_url.to_s, "/jobs"
       end
     end
 
@@ -76,7 +77,7 @@ module EhjobAuthentication
       if local_user
         name_attributes = local_user.attributes
         name_attributes = local_user.memberships.first.attributes if hr?
-        associate_params[:user].merge!(name_attributes.slice('first_name', 'last_name'))
+        associate_params[:user].merge!(name_attributes.slice('first_name', 'last_name')) if associate_params[:user].present?
       end
       associate_params.merge!(auto_create_user: auto_create_associate_user?)
     end
@@ -96,6 +97,18 @@ module EhjobAuthentication
         last_name: associate_user.last_name,
         encrypted_password: associate_user.encrypted_password
       )
+    end
+
+    def eh_url
+      if EhjobAuthentication.config.eh_url
+        File.join EhjobAuthentication.config.eh_url, ''
+      end
+    end
+
+    def job_url
+      if EhjobAuthentication.config.job_url
+        File.join EhjobAuthentication.config.job_url, ''
+      end
     end
   end
 end

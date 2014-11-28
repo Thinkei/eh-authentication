@@ -53,10 +53,10 @@ describe EhjobAuthentication::UrlExtractorService do
     end
 
     context 'EH' do
-      let(:job_url) { 'http://job.employmenthero.com/' }
+      let(:job_url) { 'http://job.employmenthero.com' }
       let(:redirect_url) do
         query = { user_token: authentication_token, user_email: associate_user.email }.to_query
-        "#{job_url}?#{query}"
+        "#{job_url}/?#{query}"
       end
       let(:membership) { double(attributes: { 'first_name' => 'Mickey', 'last_name' => 'Mouse' }) }
 
@@ -125,10 +125,10 @@ describe EhjobAuthentication::UrlExtractorService do
     end
 
     context 'JOB' do
-      let(:eh_url) { 'http://job.employmenthero.com/' }
+      let(:eh_url) { 'http://job.employmenthero.com' }
       let(:redirect_url) do
         query = { user_token: authentication_token, user_email: associate_user.email }.to_query
-        "#{eh_url}?#{query}"
+        "#{eh_url}/?#{query}"
       end
 
       ['employee', 'owner/employer'].each do |role|
