@@ -5,7 +5,7 @@ module EhjobAuthentication
 
       def associate_user
         if params[:uid].present?
-          user = User.find_user_from_oauth(params)
+          user = User.where(email: params[:info][:email]).last
         else
           user = User.where(email: params[:user][:email]).last
           user = (user && user.valid_password?(params[:user][:password])) ? user : nil

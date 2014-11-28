@@ -14,7 +14,19 @@ module EhjobAuthentication
       auth_data  = request.env["omniauth.auth"]
       local_user = User.find_user_from_oauth(auth_data)
 
-      if url = UrlExtractorService.call(auth_data, local_user)
+      url_service = UrlExtractorService.new(auth_data, nil)
+
+      # We need to go to Jobs site to get OAuth user, and then find match user from EH
+      # Because EH does not support for OAuth signup,
+      # Hence, OAuth details are not stored between two system.
+      if EhjobAuthentication.config.hr?
+        associate_user = url_service.send(:associate_user)
+        local_user ||= User.where(email: associate_user.email).first if associate_user
+      end
+
+      url_service.local_user = local_user
+
+      if url = url_service.call
         redirect_to url
       else
         provider_name = request.env["omniauth.auth"].provider
@@ -23,6 +35,7 @@ module EhjobAuthentication
       end
 
     rescue
+      flash[:error] = t('devise.omniauth_callbacks.failed')
       redirect_to main_app.new_user_session_path
     end
 

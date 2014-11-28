@@ -5,6 +5,7 @@ en:
 
     omniauth_callbacks:
       success: 'Signed in successfully with %{kind}.'
+      failed: 'Could not authenticate your account.'
       failure:
         email: 'This email is already in use, please contact support for help'
     providers:
