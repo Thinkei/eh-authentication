@@ -3,7 +3,7 @@ require 'singleton'
 require 'ostruct'
 
 module EhjobAuthentication
-  class ApiClient
+  class APIClient
     include Singleton
     include HTTParty
 

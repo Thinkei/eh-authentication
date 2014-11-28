@@ -1,5 +1,5 @@
 module EhjobAuthentication
-  module Api
+  module API
     class UsersController < ::EhjobAuthentication::ApplicationController
       before_filter :authenticate_api_token
 

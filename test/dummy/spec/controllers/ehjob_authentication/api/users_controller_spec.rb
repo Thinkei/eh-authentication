@@ -6,7 +6,7 @@ def post_assoc_user(params = {})
   post :associate_user, params
 end
 
-describe EhjobAuthentication::Api::UsersController do
+describe EhjobAuthentication::API::UsersController do
   describe 'POST #authenticate' do
     let!(:user) { User.create(email: 't@gmail.com', password: 'password') }
     let(:email) {  user.email }

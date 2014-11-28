@@ -32,7 +32,7 @@ describe EhjobAuthentication::UrlExtractorService do
   end
 
   before do
-    expect(EhjobAuthentication::ApiClient.instance).to receive(:associate_user).and_return associate_user
+    expect(EhjobAuthentication::APIClient.instance).to receive(:associate_user).and_return associate_user
 
     EhjobAuthentication.configure do |config|
       config.eh_url = eh_url
@@ -53,7 +53,7 @@ describe EhjobAuthentication::UrlExtractorService do
     end
 
     context 'EH' do
-      let(:job_url) { 'http://job.employmenthero.com' }
+      let(:job_url) { 'http://job.employmenthero.com/' }
       let(:redirect_url) do
         query = { user_token: authentication_token, user_email: associate_user.email }.to_query
         "#{job_url}?#{query}"
@@ -125,7 +125,7 @@ describe EhjobAuthentication::UrlExtractorService do
     end
 
     context 'JOB' do
-      let(:eh_url) { 'http://job.employmenthero.com' }
+      let(:eh_url) { 'http://job.employmenthero.com/' }
       let(:redirect_url) do
         query = { user_token: authentication_token, user_email: associate_user.email }.to_query
         "#{eh_url}?#{query}"
