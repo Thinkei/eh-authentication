@@ -12,7 +12,7 @@
         <span> or </span>
       </div>
     <% end %>
-    <%= simple_form_for(resource, as: resource_name, url: user_session_path) do |f| %>
+    <%= simple_form_for(resource, as: resource_name, url: user_session_path, html: { id: 'sign-in-form' }) do |f| %>
       <div class='form-inputs'>
         <%= f.input :email, required: false, autofocus: true, label: false, placeholder: 'Email Address' %>
         <%= f.input :password, required: false, label: false, placeholder: 'Password' %>
@@ -36,8 +36,7 @@
 </div>
 
 <script>
-  $('.sign-in-button').click(function () {
-    var btn = $(this);
-    btn.button('loading');
+  $('#sign-in-form').on('submit', function (event) {
+    $('.sign-in-button').button('loading');
   });
 </script>
