@@ -16,21 +16,18 @@
       <div class='form-inputs'>
         <%= f.input :email, required: false, autofocus: true, label: false, placeholder: 'Email Address' %>
         <%= f.input :password, required: false, label: false, placeholder: 'Password' %>
-        <% if EhjobAuthentication.config.hr?  %>
-          <div>
-            <%= link_to "Don't have an account? Create one now.", main_app.signup_free_trial_path %>
-          </div>
-        <% end %>
         <div class='forgot-password'>
           <%= link_to "I've forgotten my password", new_user_password_path %>
         </div>
-        <p class='disclaimer'>
-          By signing up, I agree to Employment Hero's Terms of Service and Privacy Policy
-        </p>
       </div>
       <div class='form-actions'>
         <%= f.button :submit, "Sign in", class: 'sign-in-button btn btn-primary btn-green', id: 'sign_in', data: { 'loading-text' => 'Signing in...' } %>
       </div>
+      <% if EhjobAuthentication.config.hr?  %>
+          <div>
+            <%= link_to "Don't have an account? Create one now.", main_app.signup_free_trial_path %>
+          </div>
+        <% end %>
     <% end %>
   </div>
 </div>
