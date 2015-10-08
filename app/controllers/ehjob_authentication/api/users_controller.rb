@@ -4,7 +4,7 @@ module EhjobAuthentication
       before_filter :authenticate_api_token
 
       def associate_user
-        if params[:uid].present?
+        if omniauth_params?
           user = User.where(email: params[:info][:email]).last
         else
           user = User.where(email: params[:user][:email]).last
@@ -29,7 +29,11 @@ module EhjobAuthentication
       end
 
       def create_user
-        EhjobAuthentication::CreateAssociationUserService.call(params[:user])
+        if omniauth_params?
+          EhjobAuthentication::CreateAssociationUserService.call(params[:info])
+        else
+          EhjobAuthentication::CreateAssociationUserService.call(params[:user])
+        end
       end
 
       def user_json(user)
@@ -48,6 +52,10 @@ module EhjobAuthentication
         end
 
         json.to_json
+      end
+
+      def omniauth_params?
+        params[:uid].present?
       end
     end
   end
