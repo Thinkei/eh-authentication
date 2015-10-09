@@ -83,7 +83,7 @@ module EhjobAuthentication
     end
 
     def auto_create_associate_user?
-      hr? && (local_user ? local_user.terminated : true)
+      hr? && (local_user.nil? || local_user.terminated)
     end
 
     def user_terminated?
