@@ -19,7 +19,7 @@
         %div
           = link_to "Don't have an account? Create one now.", main_app.sign_up_index_path
 
-- if browser.chrome? #browser.mobile?
+- if browser.mobile?
   .modal.fade.in#mobile-suggestion{ "data-backdrop" => "static" }
     .modal-dialog
       .modal-content
