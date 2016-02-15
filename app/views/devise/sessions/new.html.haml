@@ -1,0 +1,46 @@
+- content_for(:title, 'Sign In')
+.container
+  #session_form.col-sm-4.col-sm-offset-4
+    - if EhjobAuthentication.config.hide_social_buttons.blank?
+      - resource_class.omniauth_providers.each do |provider|
+        .form-group
+          = link_to "Sign in with #{t(provider, scope: 'devise.providers')}", omniauth_authorize_path(resource_name, provider), class: "btn btn-default #{provider} omniauth-button"
+      .divider
+        %span or
+    = simple_form_for(resource, as: resource_name, url: user_session_path, html: { id: 'sign-in-form' }) do |f|
+      .form-inputs
+        = f.input :email, required: false, autofocus: true, label: false, placeholder: 'Email Address'
+        = f.input :password, required: false, label: false, placeholder: 'Password'
+        .forgot-password
+          = link_to "I've forgotten my password", new_user_password_path
+      .form-actions
+        = f.button :submit, "Sign in", class: 'sign-in-button btn btn-primary btn-green', id: 'sign_in', data: { 'loading-text' => 'Signing in...' }
+      - if EhjobAuthentication.config.hr?
+        %div
+          = link_to "Don't have an account? Create one now.", main_app.sign_up_index_path
+
+- if browser.chrome? #browser.mobile?
+  .modal.fade.in#mobile-suggestion{ "data-backdrop" => "static" }
+    .modal-dialog
+      .modal-content
+        .modal-header
+          #mobile-modal-title Employment Hero has gone mobile!
+        .modal-body
+          = image_tag("mobile-screenshot.png", alt: 'Mobile screenshot', width: '65%', height: '65%')
+        .modal-footer
+          - if browser.ios?
+            = link_to(image_tag("mobile-button.png", alt: 'Mobile button', width: '60%', height: '60%'), 'https://itunes.apple.com/au/app/employment-hero/id1043377076?mt=8', id: 'web-referral')
+          - else
+            = link_to(image_tag("mobile-button.png", alt: 'Mobile button', width: '60%', height: '60%'), 'https://play.google.com/store/apps/details?id=com.employmenthero.mobile', id: 'web-referral')
+          %br
+          %a{'data-dismiss' => "modal", 'aria-hidden' => "true", :class => "btn-default btn-inactive"} Or continue to the mobile site >>
+
+:javascript
+  $(document).ready(function() {
+    $("#mobile-suggestion").modal();
+    mixpanel.track_links("#web-referral", "mobile#web_referral");
+  });
+
+  $('#sign-in-form').on('submit', function (event) {
+    $('.sign-in-button').button('loading');
+  });
