@@ -11,12 +11,8 @@ module EhjobAuthentication
         local_user.password = password
       end
 
-      if redirect_url = UrlExtractorService.call(params, local_user)
-        redirect!(redirect_url)
-      else
-        resource.after_database_authentication
-        success!(resource)
-      end
+      resource.after_database_authentication
+      success!(resource)
 
     rescue
       if local_user.present?
