@@ -11,6 +11,7 @@ module EhjobAuthentication
         local_user.password = password
       end
 
+      raise 'not found' unless local_user
       resource.after_database_authentication
       success!(resource)
 
